@@ -31,15 +31,20 @@ function QuestionsBox({
   index,
   question,
   score,
+  correctAnswer,
   onIndexChange,
   onQuestionChange,
   onScoreChange,
+  onCorrectAnswerChange,
+  isAnswered,
+  setIsAnswered,
 }) {
   if (score === 50) {
     return <Win />;
   }
   return (
     <div className="questions--box">
+      {`Q${index}: `}
       {question.question}
       {/* Nested Questions component to handle rendering options */}
       <Questions
@@ -50,6 +55,10 @@ function QuestionsBox({
         onIndexChange={onIndexChange}
         onQuestionChange={onQuestionChange}
         onScoreChange={onScoreChange}
+        correctAnswer={correctAnswer}
+        onCorrectAnswerChange={onCorrectAnswerChange}
+        isAnswered={isAnswered}
+        setIsAnswered={setIsAnswered}
       />
     </div>
   );
@@ -61,23 +70,50 @@ function Questions({
   index,
   question,
   score,
+  correctAnswer,
   onIndexChange,
   onQuestionChange,
   onScoreChange,
+  onCorrectAnswerChange,
+  isAnswered,
+  setIsAnswered,
 }) {
   // Handles the user's selection of an option and updates the state accordingly.
   const handleSelected = (e) => {
-    if (question.answer === e.target.value) {
-      // Move to the next question, update the index, and increase the score.
-      onQuestionChange(data[index]);
-      onIndexChange(index <= 9 ? index + 1 : index);
-      onScoreChange(score + 5);
+    setIsAnswered(true);
+    if (!(question.answer === e.target.value)) {
+      onCorrectAnswerChange(false);
+      if (score > 0) {
+        onScoreChange(score - 1);
+      }
+      return;
     }
+    // Move to the next question, update the index, and increase the score.
+    setTimeout(() => {
+      onCorrectAnswerChange(true);
+      onQuestionChange(data[index]);
+      setIsAnswered(false);
+      onIndexChange(index <= data.length - 1 ? index + 1 : index);
+      onScoreChange(score + 5);
+    }, 800);
   };
+
   // Generates options list for the current question.
   const options = question.options.map((option, index) => {
+    const isCorrectOption = correctAnswer === true;
     return (
-      <li key={`${question.id}-${index}`} className="option--list-item">
+      <li
+        key={`${question.id}-${index}`}
+        className={`option--list-item ${
+          isAnswered && option === question?.answer
+            ? "correct"
+            : isAnswered && option !== question?.answer
+            ? "incorrect"
+            : ""
+        }
+        }${!isCorrectOption ? "incorrect" : ""}`}
+      >
+        {correctAnswer}
         {index + 1}
         <label
           htmlFor={`option${question.id}-${index}`}
@@ -112,23 +148,31 @@ function QuizApp({ data }) {
   const [index, setIndex] = useState(1);
   const [question, setQuestion] = useState(data[index - 1]);
   const [score, setScore] = useState(0);
+  const [correctAnswer, setCorrectAnswer] = useState(false);
+  const [isAnswered, setIsAnswered] = useState(false);
 
   return (
-    <div className="quiz--container">
-      {/* Render Header component */}
-      <Header />
-      {/* Render ScoreBoard component with relevant data */}
-      <ScoreBoard data={data} index={index} score={score} />
-      {/* Render QuestionsBox component with relevant data and callback functions */}
-      <QuestionsBox
-        data={data}
-        index={index}
-        question={question}
-        onIndexChange={setIndex}
-        onQuestionChange={setQuestion}
-        score={score}
-        onScoreChange={setScore}
-      />
+    <div className="quiz--box">
+      <div className="quiz--container">
+        {/* Render Header component */}
+        <Header />
+        {/* Render ScoreBoard component with relevant data */}
+        <ScoreBoard data={data} index={index} score={score} />
+        {/* Render QuestionsBox component with relevant data and callback functions */}
+        <QuestionsBox
+          data={data}
+          index={index}
+          question={question}
+          onIndexChange={setIndex}
+          onQuestionChange={setQuestion}
+          score={score}
+          onScoreChange={setScore}
+          isAnswered={isAnswered}
+          setIsAnswered={setIsAnswered}
+          correctAnswer={correctAnswer}
+          onCorrectAnswerChange={setCorrectAnswer}
+        />
+      </div>
     </div>
   );
 }
