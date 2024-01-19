@@ -100,7 +100,6 @@ function Questions({
 
   // Generates options list for the current question.
   const options = question.options.map((option, index) => {
-    const isCorrectOption = correctAnswer === true;
     return (
       <li
         key={`${question.id}-${index}`}
@@ -111,7 +110,7 @@ function Questions({
             ? "incorrect"
             : ""
         }
-        }${!isCorrectOption ? "incorrect" : ""}`}
+        }`}
       >
         {correctAnswer}
         {index + 1}
