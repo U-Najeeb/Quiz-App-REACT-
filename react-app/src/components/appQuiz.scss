@@ -1,0 +1,53 @@
+@import "../assets/globalStyles.scss";
+
+@mixin flexBox($jcontent: center, $aitems: center, $fDirection: row, $gap) {
+  justify-content: $jcontent;
+  align-items: $aitems;
+  flex-direction: $fDirection;
+  gap: $gap;
+}
+
+.quiz--container {
+  width: 40%;
+  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 2px solid black;
+  padding: 1rem;
+  border-radius: 0.6rem;
+}
+.heading--container {
+  background-color: yellow;
+  // text-align: center;
+  display: flex;
+  @include flexBox(center, center, column, 1rem);
+  padding: 0.5rem;
+  border-radius: 0.6rem;
+}
+.score--board {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(174, 174, 174);
+  border-radius: 0.6rem;
+  padding: 0.7rem;
+}
+.questions--box {
+  display: flex;
+  @include flexBox(start, flex-start, column, 1rem);
+  font-size: 0.9rem;
+}
+.options {
+  font-size: 1rem;
+  border: 2px solid grey;
+  border-radius: 0.6rem;
+  width: 100%;
+  padding: 1rem;
+}
+.option {
+  margin: 0 1rem;
+}
+
+.option--list-item {
+  list-style: none;
+}
